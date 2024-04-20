@@ -48,7 +48,7 @@ class DetailBeritaFragment : Fragment() {
             binding.txtJudul2.setText(it.judulBerita)
             binding.txtPembuat2.setText("by " + it.idPembuat)
             binding.txtTanggal2.setText("on: " + it.tanggal)
-            binding.txtDeskripsi2.setText(it.deskripsi)
+//            binding.txtDeskripsi2.setText(it.deskripsi)
 
 
             val picasso = Picasso.Builder(requireContext())

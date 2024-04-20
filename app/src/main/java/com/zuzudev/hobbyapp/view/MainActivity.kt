@@ -33,8 +33,6 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    //halo ada manusia disini
-    //testing kedua kalinya
     override fun onSupportNavigateUp(): Boolean {
         return NavigationUI.navigateUp(navController, binding.drawerLayout)
                 || super.onSupportNavigateUp()
