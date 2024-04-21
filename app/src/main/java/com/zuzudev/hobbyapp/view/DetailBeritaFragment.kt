@@ -100,13 +100,13 @@ class DetailBeritaFragment : Fragment() {
             updateButtonVisibility(page)
 
             binding.btnNext.setOnClickListener {
-                currentPageIdx = (currentPageIdx + 1) % page.size
+                currentPageIdx = (currentPageIdx + 1)
                 updateTextView(page)
                 updateButtonVisibility(page)
             }
 
             binding.btnPrev.setOnClickListener {
-                currentPageIdx = (currentPageIdx - 1 + page.size) % page.size
+                currentPageIdx = (currentPageIdx - 1)
                 updateTextView(page)
                 updateButtonVisibility(page)
             }
