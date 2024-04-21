@@ -33,7 +33,7 @@ class BeritaListViewModel(application: Application): AndroidViewModel(applicatio
         val stringRequest = StringRequest(
             Request.Method.GET, url,
             {
-                Log.d("apiresult", it.toString())
+                Log.d("apilistberita", it.toString())
                 val obj = JSONObject(it)
                 if (obj.getString("result") == "OK") {
                     val data = obj.getJSONArray("data")
@@ -41,21 +41,18 @@ class BeritaListViewModel(application: Application): AndroidViewModel(applicatio
 //                    val result = Gson().fromJson(data.toString(), sType)
                     beritaLD.value = Gson().fromJson(data.toString(), sType) as ArrayList<Berita>?
                     loadingLD.value = false
-                    Log.d("showvoley", beritaLD.value.toString())
+                    Log.d("showlistberita", beritaLD.value.toString())
                 }
-
-
             },
             {
-                Log.d("showvoley", it.toString())
+                Log.d("showlistberita", it.toString())
                 studentLoadErrorLD.value = false
                 loadingLD.value = false
             })
         stringRequest.tag = TAG
         queue?.add(stringRequest)
-
-
     }
+
     override fun onCleared() {
         super.onCleared()
         queue?.cancelAll(TAG)

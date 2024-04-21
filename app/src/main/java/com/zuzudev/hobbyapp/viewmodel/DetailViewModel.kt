@@ -27,19 +27,18 @@ class DetailViewModel(application: Application): AndroidViewModel(application)
         val stringRequest = StringRequest(
             Request.Method.GET, url,
             {
-                Log.d("apiresult2", it.toString())
+                Log.d("apiberitabyid", it.toString())
                 val obj = JSONObject(it)
                 if (obj.getString("result") == "OK") {
                     val data = obj.getJSONArray("data")
                     val sType = object: TypeToken<Berita>(){}.type
                     beritaLD.value = Gson().fromJson(data[0].toString(), sType) as Berita
-                    Log.d("showvoley2", beritaLD.value.toString())
+                    Log.d("showberitabyid", beritaLD.value.toString())
                     detailBerita(idBerita)
-
                 }
             },
             {
-                Log.d("showvoley", it.toString())
+                Log.d("showberitabyid", it.toString())
             })
         stringRequest.tag = TAG
         queue?.add(stringRequest)
@@ -52,13 +51,13 @@ class DetailViewModel(application: Application): AndroidViewModel(application)
         val stringRequest = StringRequest(
             Request.Method.GET, url,
             {
-                Log.d("apiresult3", it.toString())
+                Log.d("apidetailberita", it.toString())
                 val obj = JSONObject(it)
                 if (obj.getString("result") == "OK") {
                     val data = obj.getJSONArray("data")
                     val sType = object: TypeToken<List<Page>>(){}.type
                     listPage.value = Gson().fromJson(data.toString(), sType) as ArrayList<Page>?
-                    Log.d("showvoley3", listPage.value.toString())
+                    Log.d("apidetaiberita", listPage.value.toString())
 
 //                    val data = obj.getJSONArray("data")
 //                    val sType = object: TypeToken<List<Berita>>(){}.type
@@ -69,7 +68,7 @@ class DetailViewModel(application: Application): AndroidViewModel(application)
                 }
             },
             {
-                Log.d("showvoley", it.toString())
+                Log.d("showdetailberita", it.toString())
             })
         stringRequest.tag = TAG
         queue?.add(stringRequest)
