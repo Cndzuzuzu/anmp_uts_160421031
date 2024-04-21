@@ -18,7 +18,11 @@
         android:id="@+id/itemHistory"
         android:name="com.zuzudev.hobbyapp.view.HistoryFragment"
         android:label="History"
-        tools:layout="@layout/fragment_history" />
+        tools:layout="@layout/fragment_history" >
+        <action
+            android:id="@+id/actionDetailBerita"
+            app:destination="@id/detailBeritaFragment" />
+    </fragment>
     <fragment
         android:id="@+id/itemProfile"
         android:name="com.zuzudev.hobbyapp.view.ProfileFragment"

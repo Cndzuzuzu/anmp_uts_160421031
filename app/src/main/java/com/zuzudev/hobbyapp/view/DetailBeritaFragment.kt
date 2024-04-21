@@ -1,5 +1,7 @@
 package com.zuzudev.hobbyapp.view
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -15,6 +17,7 @@ import com.zuzudev.hobbyapp.R
 import com.zuzudev.hobbyapp.databinding.FragmentDetailBeritaBinding
 import com.zuzudev.hobbyapp.model.Page
 import com.zuzudev.hobbyapp.viewmodel.DetailViewModel
+import com.zuzudev.hobbyapp.viewmodel.HistoryViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -24,6 +27,7 @@ import java.util.concurrent.TimeUnit
 class DetailBeritaFragment : Fragment() {
     private lateinit var binding:FragmentDetailBeritaBinding
     private lateinit var viewModel:DetailViewModel
+    private lateinit var histViewModel:HistoryViewModel
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -36,22 +40,26 @@ class DetailBeritaFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this).get(DetailViewModel::class.java)
+        histViewModel = ViewModelProvider(this).get(HistoryViewModel::class.java)
+
+        var loginInfo = "com.zuzudev.yarntopia"
+        var shared: SharedPreferences = requireContext().getSharedPreferences(loginInfo,
+            Context.MODE_PRIVATE )
+        var username = shared.getString("username","").toString()
 
         var id = 0
         if(arguments != null){
             id = DetailBeritaFragmentArgs.fromBundle(requireArguments()).idBerita
         }
-//        binding.btnPrev.visibility = View.GONE
-//        binding.btnNext.visibility = View.VISIBLE
+
         viewModel.fetch(id)
-//        binding.txtJudul2.setText(id.toString())
+        histViewModel.addHistory(username, id)
+
         viewModel.beritaLD.observe(viewLifecycleOwner, Observer {
             binding.txtJudul2.setText(it.judulBerita)
             binding.txtPembuat2.setText("by " + it.idPembuat)
             binding.txtTanggal2.setText("on: " + it.tanggal)
 //            binding.txtDeskripsi2.setText(it.deskripsi)
-
-
             val picasso = Picasso.Builder(requireContext())
             picasso.listener { picasso, uri, exception ->
                 exception.printStackTrace()
@@ -69,15 +77,15 @@ class DetailBeritaFragment : Fragment() {
                 })
         })
 
-        var currentPageIdx = 0
-        fun eachPage(it:List<Page>, idx:Int){
-            it.forEach {
-                if (it.idPage == idx){
-                    currentPageIdx = idx
-                    binding.txtContent.setText(it.kontenBerita)
-                }
+        histViewModel.addHistLD.observe(viewLifecycleOwner, Observer {
+            if (it==true){
+                Toast.makeText(requireContext(), "Add to History", Toast.LENGTH_SHORT).show()
             }
-        }
+        })
+
+
+
+        var currentPageIdx = 0
         fun updateTextView(listPage:List<Page>) {
             binding.txtContent.text = listPage[currentPageIdx].kontenBerita
             binding.txtPage.text = listPage[currentPageIdx].idPage.toString() + "/" + listPage.size.toString()
@@ -88,11 +96,6 @@ class DetailBeritaFragment : Fragment() {
         }
         viewModel.listPage.observe(viewLifecycleOwner, Observer{
             var page = it
-//            it.forEach{
-//
-//            }
-//            eachPage(it, it[0].idPage!!)
-
             updateTextView(page)
             updateButtonVisibility(page)
 
@@ -101,36 +104,11 @@ class DetailBeritaFragment : Fragment() {
                 updateTextView(page)
                 updateButtonVisibility(page)
             }
-//
-//                if (currentPage == 1){
-//                    eachPage(page,currentPage+1)
-//                    binding.btnPrev.visibility = View.VISIBLE
-//                    binding.btnNext.visibility = View.VISIBLE
-//                }
-//                else if (currentPage == 2){
-//                    eachPage(page,currentPage+1)
-//                    binding.btnNext.visibility = View.GONE
-//                    binding.btnPrev.visibility = View.VISIBLE
-//                }
-//                else{
-//                    Toast.makeText(requireContext(), "Last")
-//                }
-//            }
+
             binding.btnPrev.setOnClickListener {
                 currentPageIdx = (currentPageIdx - 1 + page.size) % page.size
                 updateTextView(page)
                 updateButtonVisibility(page)
-
-//                if (currentPage == 3) {
-//                    eachPage(page, currentPage-1)
-//                    binding.btnNext.visibility = View.VISIBLE
-//                    binding.btnPrev.visibility = View.VISIBLE
-//                }
-//                else if (currentPage == 2) {
-//                    eachPage(page, currentPage-1)
-//                    binding.btnPrev.visibility = View.GONE
-//                    binding.btnNext.visibility = View.VISIBLE
-//                }
             }
         })
 

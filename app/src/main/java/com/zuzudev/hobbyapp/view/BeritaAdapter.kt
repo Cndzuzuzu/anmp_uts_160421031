@@ -33,6 +33,7 @@ class BeritaAdapter(val beritaList:ArrayList<Berita>): RecyclerView.Adapter<Beri
             val action = HomeFragmentDirections.actionDetailBerita(beritaId!!)
 //            val action = HomeFragmentDirections.actionDetailBerita()
             Navigation.findNavController(it).navigate(action)
+
         }
 
         val picasso = Picasso.Builder(holder.itemView.context)
