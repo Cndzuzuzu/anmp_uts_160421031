@@ -28,29 +28,29 @@ class BeritaAdapter(val beritaList:ArrayList<Berita>): RecyclerView.Adapter<Beri
         holder.binding.txtTanggal.text = "on " + beritaList[position].tanggal
         holder.binding.txtDeskripsi.text = beritaList[position].deskripsi
 
-        holder.binding.btnRead.setOnClickListener {
-            val beritaId = beritaList[position].idBerita
-            val action = HomeFragmentDirections.actionDetailBerita(beritaId!!)
-//            val action = HomeFragmentDirections.actionDetailBerita()
-            Navigation.findNavController(it).navigate(action)
-
-        }
-
-        val picasso = Picasso.Builder(holder.itemView.context)
-        picasso.listener { picasso, uri, exception ->
-            exception.printStackTrace()
-        }
-
-        picasso.build().load(beritaList[position].gambar)
-            .into(holder.binding.imageView, object: Callback {
-                override fun onSuccess() {
-                    holder.binding.progressBar.visibility = View.INVISIBLE
-                    holder.binding.imageView.visibility = View.VISIBLE
-                }
-                override fun onError(e: Exception?) {
-                    Log.e("picasso_error", e.toString())
-                }
-            })
+//        holder.binding.btnRead.setOnClickListener {
+//            val beritaId = beritaList[position].idBerita
+//            val action = HomeFragmentDirections.actionDetailBerita(beritaId!!)
+////            val action = HomeFragmentDirections.actionDetailBerita()
+//            Navigation.findNavController(it).navigate(action)
+//
+//        }
+//
+//        val picasso = Picasso.Builder(holder.itemView.context)
+//        picasso.listener { picasso, uri, exception ->
+//            exception.printStackTrace()
+//        }
+//
+//        picasso.build().load(beritaList[position].gambar)
+//            .into(holder.binding.imageView, object: Callback {
+//                override fun onSuccess() {
+//                    holder.binding.progressBar.visibility = View.INVISIBLE
+//                    holder.binding.imageView.visibility = View.VISIBLE
+//                }
+//                override fun onError(e: Exception?) {
+//                    Log.e("picasso_error", e.toString())
+//                }
+//            })
 //        var imageView = holder.binding.imageView2
 //        var progressBar = holder.binding.progressBar3
 //        imageView.loadImage(studentList[position].photoUrl, progressBar)

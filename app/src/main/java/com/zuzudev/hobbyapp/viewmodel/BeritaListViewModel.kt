@@ -11,51 +11,41 @@ import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.zuzudev.hobbyapp.model.Berita
+import com.zuzudev.hobbyapp.model.HobbyDao
+import com.zuzudev.hobbyapp.model.HobbyDatabase
+import com.zuzudev.hobbyapp.util.buildDb
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.json.JSONObject
+import kotlin.coroutines.CoroutineContext
 
-class BeritaListViewModel(application: Application): AndroidViewModel(application)
+class BeritaListViewModel(application: Application): AndroidViewModel(application), CoroutineScope
 {
     val beritaLD = MutableLiveData<ArrayList<Berita>>()
-    val studentLoadErrorLD = MutableLiveData<Boolean>()
+    val beritaLoadErrorLD = MutableLiveData<Boolean>()
     val loadingLD = MutableLiveData<Boolean>()
+    private var job = Job()
 
-    val TAG = "volleyTag"
-    private var queue: RequestQueue? = null
+    override val coroutineContext: CoroutineContext
+        get() = job + Dispatchers.IO
 
 
     fun refresh() {
         loadingLD.value = true
-        studentLoadErrorLD.value = false
-
-        queue = Volley.newRequestQueue(getApplication())
-        val url = "http://192.168.195.188/anmp/uts/berita.php"
-
-        val stringRequest = StringRequest(
-            Request.Method.GET, url,
-            {
-                Log.d("apilistberita", it.toString())
-                val obj = JSONObject(it)
-                if (obj.getString("result") == "OK") {
-                    val data = obj.getJSONArray("data")
-                    val sType = object: TypeToken<List<Berita>>(){}.type
-//                    val result = Gson().fromJson(data.toString(), sType)
-                    beritaLD.value = Gson().fromJson(data.toString(), sType) as ArrayList<Berita>?
-                    loadingLD.value = false
-                    Log.d("showlistberita", beritaLD.value.toString())
-                }
-            },
-            {
-                Log.d("showlistberita", it.toString())
-                studentLoadErrorLD.value = false
-                loadingLD.value = false
-            })
-        stringRequest.tag = TAG
-        queue?.add(stringRequest)
+        beritaLoadErrorLD.value = false
+        launch {
+            val db = buildDb(getApplication())
+            beritaLD.postValue(db.hobbyDao().selectAllBerita())
+            loadingLD.postValue(false)
+        }
     }
+
 
     override fun onCleared() {
         super.onCleared()
-        queue?.cancelAll(TAG)
+//        queue?.cancelAll(TAG)
     }
 
 

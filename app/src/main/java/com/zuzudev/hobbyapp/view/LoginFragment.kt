@@ -48,7 +48,7 @@ class LoginFragment : Fragment() {
                 Toast.makeText(requireContext(), "Isi semua field", Toast.LENGTH_SHORT).show()
             }
             else{
-                viewModel.fetch(username, password)
+                viewModel.login(username, password)
             }
             //                val action = LoginFragmentDirections.ac()
 //                Navigation.findNavController(it).navigate(action)

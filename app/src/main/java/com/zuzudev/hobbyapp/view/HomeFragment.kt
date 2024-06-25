@@ -47,7 +47,7 @@ class HomeFragment : Fragment() {
         })
 
 
-        viewModel.studentLoadErrorLD.observe(viewLifecycleOwner, Observer {
+        viewModel.beritaLoadErrorLD.observe(viewLifecycleOwner, Observer {
             if(it == true) {
                 binding.txtError?.visibility = View.VISIBLE
             } else {

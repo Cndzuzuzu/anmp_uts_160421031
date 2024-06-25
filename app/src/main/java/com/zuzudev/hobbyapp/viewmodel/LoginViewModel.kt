@@ -11,62 +11,38 @@ import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.zuzudev.hobbyapp.model.Users
+import com.zuzudev.hobbyapp.util.buildDb
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.json.JSONObject
+import kotlin.coroutines.CoroutineContext
 
-class LoginViewModel(application: Application): AndroidViewModel(application) {
+class LoginViewModel(application: Application): AndroidViewModel(application), CoroutineScope {
 
     val userLD = MutableLiveData<Users>()
     val loginStatLD = MutableLiveData<Boolean>()
     val passErrorLD = MutableLiveData<Boolean>()
-    val TAG = "volleyTag"
-    private var queue: RequestQueue? = null
+    private var job = Job()
 
-    fun fetch(username: String, password:String) {
+    override val coroutineContext: CoroutineContext
+        get() = job + Dispatchers.IO
+
+    fun login(username: String, password:String) {
         passErrorLD.value = false
         loginStatLD.value = false
-
-        queue = Volley.newRequestQueue(getApplication())
-        val url = "http://192.168.195.188/anmp/uts/login.php"
-
-        val stringRequest = object : StringRequest(
-            Request.Method.POST, url,
-            {
-                Log.d("apilogin", it.toString())
-                val obj = JSONObject(it)
-                if (obj.getString("result") == "success") {
-                    val data = obj.getJSONArray("data")
-                    val sType = object : TypeToken<Users>() {}.type
-                    userLD.value = Gson().fromJson(data[0].toString(), sType) as Users
-                    Log.d("showprofile", userLD.value.toString())
-                    loginStatLD.value = true
-                    passErrorLD.value = false
-                    Log.d("showlogin", it.toString())
-                }
-                else{
-                    loginStatLD.value = false
-                    passErrorLD.value = true
-                }
-            },
-            {
-                Log.d("showlogin", it.toString())
-                loginStatLD.value = false
-                passErrorLD.value = true
-            })
-        {
-            override fun getParams(): MutableMap<String, String> {
-                val params = HashMap<String, String>()
-                params["username"] = username
-                params["password"] = password
-                return params
-            }
+        launch {
+            val db = buildDb(getApplication())
+            userLD.postValue(db.hobbyDao().login(username, password))
         }
-        stringRequest.tag = TAG
-        queue?.add(stringRequest)
+
+
 
     }
     override fun onCleared() {
         super.onCleared()
-        queue?.cancelAll(TAG)
+//        queue?.cancelAll(TAG)
     }
 
 }

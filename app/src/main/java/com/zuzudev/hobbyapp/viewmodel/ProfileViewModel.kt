@@ -13,112 +13,42 @@ import com.google.gson.reflect.TypeToken
 import com.zuzudev.hobbyapp.model.Berita
 import com.zuzudev.hobbyapp.model.Page
 import com.zuzudev.hobbyapp.model.Users
+import com.zuzudev.hobbyapp.util.buildDb
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.json.JSONObject
+import kotlin.coroutines.CoroutineContext
 
-class ProfileViewModel(application: Application): AndroidViewModel(application) {
+class ProfileViewModel(application: Application): AndroidViewModel(application), CoroutineScope {
 //    val listPage = MutableLiveData<ArrayList<Page>>()
     val userLD = MutableLiveData<Users>()
     val updatePassLD = MutableLiveData<Boolean>()
     val updateDataLD = MutableLiveData<Boolean>()
-    val TAG = "volleyTag"
-    private var queue: RequestQueue? = null
+    private var job = Job()
+
+    override val coroutineContext: CoroutineContext
+        get() = job + Dispatchers.IO
+
 
     fun fetch(username: String) {
-        queue = Volley.newRequestQueue(getApplication())
-        val url = "http://192.168.195.188/anmp/uts/userById.php"
-
-        val stringRequest = object : StringRequest(
-            Request.Method.POST, url,
-            {
-                Log.d("apiprofile", it.toString())
-                val obj = JSONObject(it)
-                if (obj.getString("result") == "OK") {
-                    val data = obj.getJSONArray("data")
-                    val sType = object : TypeToken<Users>() {}.type
-                    userLD.value = Gson().fromJson(data[0].toString(), sType) as Users
-                    Log.d("showprofile", userLD.value.toString())
-
-                }
-            },
-            {
-                Log.d("showprofile", it.toString())
-            })
-        {
-            override fun getParams(): MutableMap<String, String> {
-                val params = HashMap<String, String>()
-                params["username"] = username
-                return params
-            }
+        launch {
+            val db = buildDb(getApplication())
+            userLD.postValue(db.hobbyDao().selectUser(username))
         }
-        stringRequest.tag = TAG
-        queue?.add(stringRequest)
 
     }
 
-    fun updatePassword(username: String, password:String){
-//        updatePassLD.value = false
-
-        queue = Volley.newRequestQueue(getApplication())
-        val url = "http://192.168.195.188/anmp/uts/updatePassword.php"
-
-        val stringRequest = object : StringRequest(
-            Request.Method.POST, url,
-            {
-                Log.d("apichangepass", it.toString())
-                val obj = JSONObject(it)
-                if (obj.getString("result") == "success") {
-                    updatePassLD.value = true
-                }
-            },
-            {
-                Log.d("showpass", it.toString())
-                updatePassLD.value = false
-            })
-        {
-            override fun getParams(): MutableMap<String, String> {
-                val params = HashMap<String, String>()
-                params["username"] = username
-                params["password"] = password
-                return params
-            }
+    fun updateUser(user:Users){
+        launch {
+            val db = buildDb(getApplication())
+            db.hobbyDao().updateUser(user)
         }
-        stringRequest.tag = TAG
-        queue?.add(stringRequest)
     }
 
-    fun updateData(username:String, namaDepan:String, namaBelakang:String ){
-//        updateDataLD.value = false
+//    fun updateData(username:String, namaDepan:String, namaBelakang:String ){
+//
+//    }
 
-        queue = Volley.newRequestQueue(getApplication())
-        val url = "http://192.168.195.188/anmp/uts/updateData.php"
-
-        val stringRequest = object : StringRequest(
-            Request.Method.POST, url,
-            {
-                Log.d("apichangedata", it.toString())
-                val obj = JSONObject(it)
-                if (obj.getString("result") == "success") {
-                    updateDataLD.value = true
-                }
-            },
-            {
-                Log.d("showchangedata", it.toString())
-                updateDataLD.value = false
-            })
-        {
-            override fun getParams(): MutableMap<String, String> {
-                val params = HashMap<String, String>()
-                params["username"] = username
-                params["namaDepan"] = namaDepan
-                params["namaBelakang"] = namaBelakang
-                return params
-            }
-        }
-        stringRequest.tag = TAG
-        queue?.add(stringRequest)
-    }
-    override fun onCleared() {
-        super.onCleared()
-        queue?.cancelAll(TAG)
-    }
 }
