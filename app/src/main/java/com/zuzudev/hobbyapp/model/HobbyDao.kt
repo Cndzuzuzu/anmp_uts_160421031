@@ -33,6 +33,8 @@ interface HobbyDao {
 
     @Query("SELECT * FROM page")
     fun selectAllPage(): List<Page>
+    @Query("SELECT * FROM page WHERE id_berita=:idBerita")
+    fun selectPageByBerita(idBerita:Int): List<Page>
 
     @Query("SELECT * FROM page WHERE id_page= :id")
     fun selectPage(id:Int): Page

@@ -12,70 +12,57 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.zuzudev.hobbyapp.model.Berita
 import com.zuzudev.hobbyapp.model.Page
+import com.zuzudev.hobbyapp.util.buildDb
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.json.JSONObject
+import kotlin.coroutines.CoroutineContext
 
-class DetailViewModel(application: Application): AndroidViewModel(application)
+class DetailViewModel(application: Application): AndroidViewModel(application), CoroutineScope
 {
-    val listPage = MutableLiveData<ArrayList<Page>>()
+    val listPage = MutableLiveData<List<Page>>()
+    val pageLD = MutableLiveData<Page>()
     val beritaLD = MutableLiveData<Berita>()
-    val TAG = "volleyTag"
-    private var queue: RequestQueue? = null
-    fun fetch(idBerita:Int) {
-        queue = Volley.newRequestQueue(getApplication())
-        val url = "http://192.168.195.188/anmp/uts/beritaById.php?idBerita="+idBerita.toString()
+    private var job = Job()
 
-        val stringRequest = StringRequest(
-            Request.Method.GET, url,
-            {
-                Log.d("apiberitabyid", it.toString())
-                val obj = JSONObject(it)
-                if (obj.getString("result") == "OK") {
-                    val data = obj.getJSONArray("data")
-                    val sType = object: TypeToken<Berita>(){}.type
-                    beritaLD.value = Gson().fromJson(data[0].toString(), sType) as Berita
-                    Log.d("showberitabyid", beritaLD.value.toString())
-                    detailBerita(idBerita)
-                }
-            },
-            {
-                Log.d("showberitabyid", it.toString())
-            })
-        stringRequest.tag = TAG
-        queue?.add(stringRequest)
+    override val coroutineContext: CoroutineContext
+        get() = job + Dispatchers.IO
+
+    fun fetch(idBerita:Int) {
+        launch {
+            val db = buildDb(getApplication())
+            beritaLD.postValue(db.hobbyDao().selectBerita(idBerita))
+            Log.d("beritaData", beritaLD.value.toString())
+        }
+        detailBerita(idBerita)
     }
 
     fun detailBerita(idBerita:Int) {
-        queue = Volley.newRequestQueue(getApplication())
-        val url = "http://192.168.195.188/anmp/uts/detailberita.php?idBerita="+idBerita.toString()
+        launch {
+            val db = buildDb(getApplication())
+            listPage.postValue(db.hobbyDao().selectPageByBerita(idBerita))
+            Log.d("beritaDataDetail", listPage.value.toString())
 
-        val stringRequest = StringRequest(
-            Request.Method.GET, url,
-            {
-                Log.d("apidetailberita", it.toString())
-                val obj = JSONObject(it)
-                if (obj.getString("result") == "OK") {
-                    val data = obj.getJSONArray("data")
-                    val sType = object: TypeToken<List<Page>>(){}.type
-                    listPage.value = Gson().fromJson(data.toString(), sType) as ArrayList<Page>?
-                    Log.d("apidetaiberita", listPage.value.toString())
+        }
 
-//                    val data = obj.getJSONArray("data")
-//                    val sType = object: TypeToken<List<Berita>>(){}.type
-////                    val result = Gson().fromJson(data.toString(), sType)
-//                    beritaLD.value = Gson().fromJson(data.toString(), sType) as ArrayList<Berita>?
-//                    loadingLD.value = false
-//                    Log.d("showvoley", beritaLD.value.toString())
-                }
-            },
-            {
-                Log.d("showdetailberita", it.toString())
-            })
-        stringRequest.tag = TAG
-        queue?.add(stringRequest)
+    }
+
+    fun fetchPage(idPage:Int) {
+        launch {
+            val db = buildDb(getApplication())
+            pageLD.postValue(db.hobbyDao().selectPage(idPage))
+            Log.d("beritaPage", pageLD.value.toString())
+        }
+    }
+    fun addPage(page:Page){
+        val db = buildDb(getApplication())
+        db.hobbyDao().insertAllPage(page)
     }
     override fun onCleared() {
         super.onCleared()
-        queue?.cancelAll(TAG)
+
     }
 
 

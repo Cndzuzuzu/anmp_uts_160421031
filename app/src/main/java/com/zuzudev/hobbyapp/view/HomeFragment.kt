@@ -34,10 +34,10 @@ class HomeFragment : Fragment() {
         binding.recView.layoutManager = LinearLayoutManager(context)
         binding.recView.adapter = beritaListAdapter
 
-//        binding.btnFab.setOnClickListener {
-//            val action = TodoListFragmentDirections.actionCreateTodo()
-//            Navigation.findNavController(it).navigate(action)
-//        }
+        binding.btnFab.setOnClickListener {
+            val action = HomeFragmentDirections.actionTambahBerita()
+            Navigation.findNavController(it).navigate(action)
+        }
 
         observeViewModel()
 

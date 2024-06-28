@@ -13,6 +13,9 @@
         <action
             android:id="@+id/actionDetailBerita"
             app:destination="@id/detailBeritaFragment" />
+        <action
+            android:id="@+id/actionTambahBerita"
+            app:destination="@id/tambahBeritaFragment" />
     </fragment>
     <fragment
         android:id="@+id/itemHistory"
@@ -33,6 +36,23 @@
         android:name="com.zuzudev.hobbyapp.view.DetailBeritaFragment"
         android:label="Detail Berita"
         tools:layout="@layout/fragment_detail_berita">
+        <argument
+            android:name="idBerita"
+            app:argType="integer" />
+        <action
+            android:id="@+id/actionTambahPage"
+            app:destination="@id/tambahPageFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/tambahBeritaFragment"
+        android:name="com.zuzudev.hobbyapp.view.TambahBeritaFragment"
+        android:label="fragment_tambah_berita"
+        tools:layout="@layout/fragment_tambah_berita" />
+    <fragment
+        android:id="@+id/tambahPageFragment"
+        android:name="com.zuzudev.hobbyapp.view.TambahPageFragment"
+        android:label="fragment_tambah_page"
+        tools:layout="@layout/fragment_tambah_page" >
         <argument
             android:name="idBerita"
             app:argType="integer" />

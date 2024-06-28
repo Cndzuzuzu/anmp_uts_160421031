@@ -4,6 +4,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Callback
@@ -70,6 +71,7 @@ class BeritaAdapter(val beritaList:ArrayList<Berita>): RecyclerView.Adapter<Beri
 
     override fun onReadClick(v: View) {
         val idberita = v.tag.toString().toInt()
+//        Toast.makeText(v.context,idberita.toString(), Toast.LENGTH_SHORT).show()
         val action = HomeFragmentDirections.actionDetailBerita(idberita)
         Navigation.findNavController(v).navigate(action)
     }
