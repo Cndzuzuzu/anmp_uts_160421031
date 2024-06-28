@@ -21,33 +21,10 @@ class WelcomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityWelcomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
-//        first = true
-
         navController = (supportFragmentManager.findFragmentById(R.id.navHost2) as NavHostFragment).navController
-//        NavigationUI.setupActionBarWithNavController(this, navController, binding.drawerLayout)
-//        NavigationUI.setupWithNavController(binding.navView, navController)
-
-//        binding.bottomNav.setupWithNavController(navController)
-
     }
 
-
-//    override fun onSupportNavigateUp(): Boolean {
-//        return NavigationUI.navigateUp(navController, binding.drawerLayout)
-//                || super.onSupportNavigateUp()
-//    }
-
     override fun onBackPressed() {
-//        var loginInfo = "com.zuzudev.yarntopia"
-//        var shared: SharedPreferences = getSharedPreferences(loginInfo,
-//            Context.MODE_PRIVATE )
-//        var userid = shared.getString("username","").toString()
-//        if(userid == "")
-//        {
-//            Toast.makeText(this, "Press Back Button", Toast.LENGTH_SHORT).show()
-//        }
-//        else{
             super.onBackPressed()
-//        }
     }
 }

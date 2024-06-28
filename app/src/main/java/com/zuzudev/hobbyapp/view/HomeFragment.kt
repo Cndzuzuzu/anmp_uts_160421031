@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.zuzudev.hobbyapp.R
 import com.zuzudev.hobbyapp.databinding.FragmentHomeBinding
@@ -32,7 +33,15 @@ class HomeFragment : Fragment() {
         viewModel.refresh()
         binding.recView.layoutManager = LinearLayoutManager(context)
         binding.recView.adapter = beritaListAdapter
+
+//        binding.btnFab.setOnClickListener {
+//            val action = TodoListFragmentDirections.actionCreateTodo()
+//            Navigation.findNavController(it).navigate(action)
+//        }
+
         observeViewModel()
+
+
         binding.refreshLayout.setOnRefreshListener {
             viewModel.refresh()
             binding.recView.visibility = View.GONE

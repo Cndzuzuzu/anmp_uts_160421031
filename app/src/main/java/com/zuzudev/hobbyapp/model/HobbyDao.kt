@@ -14,13 +14,15 @@ interface HobbyDao {
     fun insertAllBerita(vararg berita:Berita)
 
     @Query("SELECT * FROM berita")
-    fun selectAllBerita(): ArrayList<Berita>
+    fun selectAllBerita(): List<Berita>
 
     @Query("SELECT * FROM berita WHERE id_berita= :id")
     fun selectBerita(id:Int): Berita
 
     @Delete
     fun deleteBerita(berita:Berita)
+    @Update
+    fun updateBerita(berita:Berita)
 
 
 
@@ -30,7 +32,7 @@ interface HobbyDao {
     fun insertAllPage(vararg page:Page)
 
     @Query("SELECT * FROM page")
-    fun selectAllPage(): ArrayList<Page>
+    fun selectAllPage(): List<Page>
 
     @Query("SELECT * FROM page WHERE id_page= :id")
     fun selectPage(id:Int): Page
@@ -46,12 +48,12 @@ interface HobbyDao {
     fun insertAllUser(vararg user:Users)
 
     @Query("SELECT * FROM users")
-    fun selectAllUser(): ArrayList<Users>
+    fun selectAllUser(): List<Users>
 
     @Query("SELECT * FROM users WHERE username= :id")
     fun selectUser(id:String): Users
 
-    @Query("SELECT * FROM users WHERE username= :id AND password= :password")
+    @Query("SELECT * FROM users WHERE username=:id AND password=:password")
     fun login(id:String, password:String): Users
 
     @Delete

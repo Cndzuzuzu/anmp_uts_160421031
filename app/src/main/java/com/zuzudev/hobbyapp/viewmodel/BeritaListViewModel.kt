@@ -23,7 +23,7 @@ import kotlin.coroutines.CoroutineContext
 
 class BeritaListViewModel(application: Application): AndroidViewModel(application), CoroutineScope
 {
-    val beritaLD = MutableLiveData<ArrayList<Berita>>()
+    val beritaLD = MutableLiveData<List<Berita>>()
     val beritaLoadErrorLD = MutableLiveData<Boolean>()
     val loadingLD = MutableLiveData<Boolean>()
     private var job = Job()
@@ -41,13 +41,8 @@ class BeritaListViewModel(application: Application): AndroidViewModel(applicatio
             loadingLD.postValue(false)
         }
     }
-
-
     override fun onCleared() {
         super.onCleared()
 //        queue?.cancelAll(TAG)
     }
-
-
-
 }

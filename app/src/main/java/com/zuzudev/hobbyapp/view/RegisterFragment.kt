@@ -12,19 +12,15 @@ import androidx.navigation.Navigation
 import com.zuzudev.hobbyapp.R
 import com.zuzudev.hobbyapp.databinding.FragmentLoginBinding
 import com.zuzudev.hobbyapp.databinding.FragmentRegisterBinding
+import com.zuzudev.hobbyapp.model.Users
 import com.zuzudev.hobbyapp.viewmodel.LoginViewModel
 import com.zuzudev.hobbyapp.viewmodel.RegisterViewModel
 
 
-class RegisterFragment : Fragment() {
+class RegisterFragment : Fragment(), RegisterClickListener {
     private lateinit var binding: FragmentRegisterBinding
     private lateinit var viewModel: RegisterViewModel
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(RegisterViewModel::class.java)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,27 +32,9 @@ class RegisterFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.btnRegister.setOnClickListener {
-            var username = binding.txtUsername.text.toString()
-            var password = binding.txtPassword.text.toString()
-            var confirm = binding.txtConfirm.text.toString()
-            var email = binding.txtEmail.text.toString()
-            var namaDepan = binding.txtNamaDepan.text.toString()
-            var namaBelakang = binding.txtNamaBelakang.text.toString()
-
-            if ((password == confirm) &&
-                (username != "" && password != "" && confirm != "" && namaDepan != "" && namaBelakang != "" && email != "")
-            ) {
-                viewModel.fetch(username, password, email, namaDepan, namaBelakang)
-
-
-            } else if (username == "" || password == "" || confirm == "" || namaDepan == "" || namaBelakang == "" || email == "") {
-                Toast.makeText(requireContext(), "Isi semua field", Toast.LENGTH_SHORT).show()
-
-            } else {
-                Toast.makeText(requireContext(), "Pasword salah", Toast.LENGTH_SHORT).show()
-            }
-        }
+        binding.user = Users("","","", "")
+        viewModel = ViewModelProvider(this).get(RegisterViewModel::class.java)
+        binding.regisListener = this
 
         binding.btnBack.setOnClickListener{
             val action = RegisterFragmentDirections.actionRegisterFragmentToLoginFragment2()
@@ -75,5 +53,24 @@ class RegisterFragment : Fragment() {
 
 
         })
+    }
+
+    override fun onRegisterClick(v: View) {
+        if ((binding.user!!.password == binding.txtConfirm.text.toString()) &&
+            (binding.user!!.username != "" && binding.user!!.password != "" && binding.txtConfirm.text.toString() != "" &&
+                    binding.user!!.namaDepan != "" && binding.user!!.namaBelakang != "" && binding.user!!.email != "")
+        ) {
+            viewModel.register(binding.user!!)
+//            val action = RegisterFragmentDirections.actionRegisterFragmentToLoginFragment2()
+//            Navigation.findNavController(v).navigate(action)
+
+
+        } else if (binding.user!!.username == "" || binding.user!!.password == "" || binding.txtConfirm.text.toString() == "" ||
+            binding.user!!.namaDepan == "" || binding.user!!.namaBelakang == "" || binding.user!!.email == "") {
+            Toast.makeText(requireContext(), "Isi semua field", Toast.LENGTH_SHORT).show()
+
+        } else {
+            Toast.makeText(requireContext(), "Pasword salah", Toast.LENGTH_SHORT).show()
+        }
     }
 }

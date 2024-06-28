@@ -11,7 +11,7 @@ import com.squareup.picasso.Picasso
 import com.zuzudev.hobbyapp.databinding.BeritaListItemBinding
 import com.zuzudev.hobbyapp.model.Berita
 
-class BeritaAdapter(val beritaList:ArrayList<Berita>): RecyclerView.Adapter<BeritaAdapter.BeritaViewHolder>()
+class BeritaAdapter(val beritaList:ArrayList<Berita>): RecyclerView.Adapter<BeritaAdapter.BeritaViewHolder>(), ReadClickListener
 {
     class BeritaViewHolder(var binding: BeritaListItemBinding) :
         RecyclerView.ViewHolder(binding.root)
@@ -23,10 +23,13 @@ class BeritaAdapter(val beritaList:ArrayList<Berita>): RecyclerView.Adapter<Beri
         return BeritaViewHolder(binding)
     }
     override fun onBindViewHolder(holder: BeritaViewHolder, position: Int) {
-        holder.binding.txtJudul.text = beritaList[position].judulBerita
-        holder.binding.txtPembuat.text = "by " + beritaList[position].idPembuat
-        holder.binding.txtTanggal.text = "on " + beritaList[position].tanggal
-        holder.binding.txtDeskripsi.text = beritaList[position].deskripsi
+        holder.binding.berita = beritaList[position]
+        holder.binding.listener = this
+
+//        holder.binding.txtJudul.text = beritaList[position].judulBerita
+//        holder.binding.txtPembuat.text = "by " + beritaList[position].idPembuat
+//        holder.binding.txtTanggal.text = "on " + beritaList[position].tanggal
+//        holder.binding.txtDeskripsi.text = beritaList[position].deskripsi
 
 //        holder.binding.btnRead.setOnClickListener {
 //            val beritaId = beritaList[position].idBerita
@@ -59,10 +62,16 @@ class BeritaAdapter(val beritaList:ArrayList<Berita>): RecyclerView.Adapter<Beri
     override fun getItemCount(): Int {
         return beritaList.size
     }
-    fun updateBeritaList(newBeritaList: ArrayList<Berita>) {
+    fun updateBeritaList(newBeritaList: List<Berita>) {
         beritaList.clear()
         beritaList.addAll(newBeritaList)
         notifyDataSetChanged()
+    }
+
+    override fun onReadClick(v: View) {
+        val idberita = v.tag.toString().toInt()
+        val action = HomeFragmentDirections.actionDetailBerita(idberita)
+        Navigation.findNavController(v).navigate(action)
     }
 
 }

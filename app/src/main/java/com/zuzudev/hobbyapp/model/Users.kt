@@ -7,13 +7,13 @@ import androidx.room.PrimaryKey
 @Entity
 data class Users(
     @ColumnInfo(name="password")
-    var password:String?,
+    var password:String,
     @ColumnInfo(name="email")
-    var email:String?,
+    var email:String,
     @ColumnInfo(name="nama_depan")
-    var namaDepan:String?,
+    var namaDepan:String,
     @ColumnInfo(name="nama_belakang")
-    var namaBelakang:String?,
+    var namaBelakang:String,
 ){
     @PrimaryKey(autoGenerate = false)
     var username:String = ""

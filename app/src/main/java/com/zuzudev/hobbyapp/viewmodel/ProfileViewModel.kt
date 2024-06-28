@@ -33,11 +33,14 @@ class ProfileViewModel(application: Application): AndroidViewModel(application),
 
 
     fun fetch(username: String) {
+//        var data:Users = Users("","","","")
         launch {
             val db = buildDb(getApplication())
             userLD.postValue(db.hobbyDao().selectUser(username))
+            Log.d("profileData", userLD.value.toString())
         }
-
+//        userLD.value = data
+//        Log.d("profile", userLD.value.toString())
     }
 
     fun updateUser(user:Users){
@@ -47,8 +50,8 @@ class ProfileViewModel(application: Application): AndroidViewModel(application),
         }
     }
 
-//    fun updateData(username:String, namaDepan:String, namaBelakang:String ){
-//
-//    }
+    fun updatePassword(username:String, nerPass:String ){
+
+    }
 
 }

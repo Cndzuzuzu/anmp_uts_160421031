@@ -27,15 +27,7 @@ class ProfileFragment : Fragment() {
     private lateinit var binding:FragmentProfileBinding
     private lateinit var viewModel: ProfileViewModel
     private var username:String = ""
-    private var user:Users = Users("","","","","")
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        //get volley pakai viewmodel
-        viewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
-
-
-    }
+    private var user:Users = Users("","","","")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,12 +39,14 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.user = Users("","","","")
+        viewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
         viewModel.updateDataLD.value = false
         var loginInfo = "com.zuzudev.yarntopia"
         var shared: SharedPreferences = requireContext().getSharedPreferences(loginInfo,
             Context.MODE_PRIVATE )
         username = shared.getString("username","").toString()
-
+        Toast.makeText(requireContext(), username, Toast.LENGTH_SHORT).show()
         viewModel.fetch(username)
 
         binding.btnLogout.setOnClickListener {
@@ -78,7 +72,7 @@ class ProfileFragment : Fragment() {
         }
 
         viewModel.userLD.observe(viewLifecycleOwner, Observer {
-            user = it
+            binding.user = it
             UpdateUI(it)
 
             //UPDATE DATA
@@ -86,7 +80,7 @@ class ProfileFragment : Fragment() {
                 val newNamaDepan = binding.txtNamaDepan.text.toString()
                 val newNamaBelakang = binding.txtNamaBelakang.text.toString()
 
-                viewModel.updateData(user.username!!, newNamaDepan, newNamaBelakang)
+                viewModel.updateUser(user)
             }
 
 ////            UPDATE Password
@@ -136,18 +130,10 @@ class ProfileFragment : Fragment() {
         })
 
 
+        fun observeModel(){
 
+        }
     }
 
 
-
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ProfileFragment().apply {
-                arguments = Bundle().apply {
-
-                }
-            }
-    }
 }

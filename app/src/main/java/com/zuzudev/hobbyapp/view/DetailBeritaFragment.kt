@@ -24,7 +24,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 
 
-class DetailBeritaFragment : Fragment() {
+class DetailBeritaFragment : Fragment(),  {
     private lateinit var binding:FragmentDetailBeritaBinding
     private lateinit var viewModel:DetailViewModel
     private lateinit var histViewModel:HistoryViewModel

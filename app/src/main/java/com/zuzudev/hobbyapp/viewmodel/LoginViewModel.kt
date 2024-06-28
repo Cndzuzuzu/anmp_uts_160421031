@@ -15,6 +15,7 @@ import com.zuzudev.hobbyapp.util.buildDb
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import kotlin.coroutines.CoroutineContext
@@ -35,10 +36,12 @@ class LoginViewModel(application: Application): AndroidViewModel(application), C
         launch {
             val db = buildDb(getApplication())
             userLD.postValue(db.hobbyDao().login(username, password))
+            Log.d("login", userLD.value.toString())
+//            passErrorLD.postValue(userLD.value == null)
+//            loginStatLD.postValue(true)
+
         }
-
-
-
+        Log.d("loginStat", passErrorLD.value.toString() + loginStatLD.value.toString())
     }
     override fun onCleared() {
         super.onCleared()

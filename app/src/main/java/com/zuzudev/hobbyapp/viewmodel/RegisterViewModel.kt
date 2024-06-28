@@ -11,51 +11,35 @@ import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.zuzudev.hobbyapp.model.Users
+import com.zuzudev.hobbyapp.util.buildDb
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.json.JSONObject
+import kotlin.coroutines.CoroutineContext
 
-class RegisterViewModel(application: Application): AndroidViewModel(application) {
+class RegisterViewModel(application: Application): AndroidViewModel(application), CoroutineScope {
 
     val userLD = MutableLiveData<Users>()
     val registerLD = MutableLiveData<Boolean>()
-    val TAG = "volleyTag"
-    private var queue: RequestQueue? = null
 
-    fun fetch(username: String, password:String, email:String, namaDepan:String, namaBelakang:String) {
-        queue = Volley.newRequestQueue(getApplication())
-        val url = "http://192.168.195.188/anmp/uts/register.php"
+    private var job = Job()
 
-        val stringRequest = object : StringRequest(
-            Request.Method.POST, url,
-            {
-                Log.d("apiregis", it.toString())
-                val obj = JSONObject(it)
-                if (obj.getString("result") == "success") {
-                    Log.d("showregis", it.toString())
-                    registerLD.value = true
-                }
-            },
-            {
-                Log.d("showregis", it.toString())
-                registerLD.value = false
-            })
-        {
-            override fun getParams(): MutableMap<String, String> {
-                val params = HashMap<String, String>()
-                params["username"] = username
-                params["password"] = password
-                params["email"] = email
-                params["namaDepan"] = namaDepan
-                params["namaBelakang"] = namaBelakang
-                return params
-            }
+    override val coroutineContext: CoroutineContext
+        get() = job + Dispatchers.IO
+
+
+    fun register(user:Users) {
+        launch {
+            val db = buildDb(getApplication())
+            db.hobbyDao().insertAllUser(user)
+            registerLD.postValue(true)
         }
-        stringRequest.tag = TAG
-        queue?.add(stringRequest)
 
     }
     override fun onCleared() {
         super.onCleared()
-        queue?.cancelAll(TAG)
     }
 
 }
