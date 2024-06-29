@@ -10,6 +10,9 @@
         <variable
             name="regisListener"
             type="com.zuzudev.hobbyapp.view.RegisterClickListener" />
+        <variable
+            name="backListener"
+            type="com.zuzudev.hobbyapp.view.BackClickListener" />
     </data>
 
     <FrameLayout
@@ -186,6 +189,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="Back"
+                android:onClick="@{backListener::onBackClick}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/btnRegister" />

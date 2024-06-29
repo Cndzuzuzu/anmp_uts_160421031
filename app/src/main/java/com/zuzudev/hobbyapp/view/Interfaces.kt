@@ -14,3 +14,11 @@ interface RegisterClickListener {
 interface ReadClickListener{
     fun onReadClick(v:View)
 }
+
+interface UpdateClickListener{
+    fun onUpdateClick(v:View)
+}
+
+interface BackClickListener{
+    fun onBackClick(v:View)
+}

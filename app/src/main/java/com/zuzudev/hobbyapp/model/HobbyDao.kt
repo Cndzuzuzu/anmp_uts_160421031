@@ -58,6 +58,9 @@ interface HobbyDao {
     @Query("SELECT * FROM users WHERE username=:id AND password=:password")
     fun login(id:String, password:String): Users
 
+    @Query("UPDATE users SET password=:password WHERE username = :username")
+    fun updatePassword(username:String, password: String)
+
     @Delete
     fun deleteUser(user:Users)
 

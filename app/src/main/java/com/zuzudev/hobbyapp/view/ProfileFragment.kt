@@ -23,7 +23,7 @@ import com.zuzudev.hobbyapp.viewmodel.ProfileViewModel
 
 
 
-class ProfileFragment : Fragment() {
+class ProfileFragment : Fragment() ,RegisterClickListener,UpdateClickListener,BackClickListener{
     private lateinit var binding:FragmentProfileBinding
     private lateinit var viewModel: ProfileViewModel
     private var username:String = ""
@@ -41,6 +41,9 @@ class ProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.user = Users("","","","")
         viewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
+        binding.regisListener=this
+        binding.updateListener=this
+        binding.logoutListener=this
         viewModel.updateDataLD.value = false
         var loginInfo = "com.zuzudev.yarntopia"
         var shared: SharedPreferences = requireContext().getSharedPreferences(loginInfo,
@@ -48,77 +51,37 @@ class ProfileFragment : Fragment() {
         username = shared.getString("username","").toString()
         Toast.makeText(requireContext(), username, Toast.LENGTH_SHORT).show()
         viewModel.fetch(username)
-
-        binding.btnLogout.setOnClickListener {
-            var loginInfo = "com.zuzudev.yarntopia"
-            var shared: SharedPreferences =
-                requireContext().getSharedPreferences(loginInfo, Context.MODE_PRIVATE)
-            var editor: SharedPreferences.Editor = shared.edit()
-            editor.clear()
-            editor.apply()
-
-//            WelcomeActivity.first = false
-//            val intent = Intent(it.context, WelcomeActivity::class.java)
-//            it.context.startActivity(intent)
-            requireActivity().finish()
-        }
+        observeModel()
 //        viewModel.updateDataLD.value = false
 
-        fun UpdateUI(userLog: Users){
-            binding.txtNamaDepan.setText(userLog.namaDepan)
-            binding.txtNamaBelakang.setText(userLog.namaBelakang)
-            binding.txtEmail.setText(userLog.email)
-            binding.txtUsername.setText("Halo!! " + userLog.username)
-        }
 
+
+
+
+
+
+    }
+    fun UpdateUI(userLog: Users){
+        binding.txtNamaDepan.setText(userLog.namaDepan)
+        binding.txtNamaBelakang.setText(userLog.namaBelakang)
+        binding.txtEmail.setText(userLog.email)
+        binding.txtUsername.setText("Halo!! " + userLog.username)
+    }
+
+    fun observeModel(){
         viewModel.userLD.observe(viewLifecycleOwner, Observer {
-            binding.user = it
-            UpdateUI(it)
-
-            //UPDATE DATA
-            binding.btnUpdate.setOnClickListener {
-                val newNamaDepan = binding.txtNamaDepan.text.toString()
-                val newNamaBelakang = binding.txtNamaBelakang.text.toString()
-
-                viewModel.updateUser(user)
-            }
-
-////            UPDATE Password
-            binding.btnPassword.setOnClickListener {
-                val newPass = binding.txtNewPassword.text.toString()
-                val oldPass = binding.txtOldPassword.text.toString()
-                val confirm = binding.txtConfirm.text.toString()
-
-                if (newPass == confirm && oldPass == user.password)
-                 {
-                    viewModel.updatePassword(user.username!!, newPass)
-                    binding.txtNewPassword.setText("")
-                    binding.txtOldPassword.setText("")
-                    binding.txtConfirm.setText("")
-                    Toast.makeText(requireContext(), "sukses update password", Toast.LENGTH_SHORT).show()
-//                    viewModel.fetch(username)
-
-                }
-                else if (confirm == "" || newPass == "" ||oldPass == "")
-                {
-                    Toast.makeText(requireContext(), "Isi semua field password", Toast.LENGTH_SHORT)
-                        .show()
-                }
-                else
-                {
-                    Toast.makeText(requireContext(), "Passwords do not match", Toast.LENGTH_SHORT)
-                        .show()
-                }
+            if(it != null) {
+                binding.user = it
+                viewModel.oldPass.value = it.password
+                UpdateUI(it)
             }
         })
 //
-//        viewModel.updatePassLD.observe(viewLifecycleOwner, Observer{
-//            if(it == true) {
-//                Toast.makeText(requireContext(), "sukses update password", Toast.LENGTH_SHORT).show()
-//            } else {
-//                Toast.makeText(requireContext(), "gagal update password", Toast.LENGTH_SHORT).show()
-//            }
-//        })
+        viewModel.updatePassLD.observe(viewLifecycleOwner, Observer{
+            if(it == true) {
+                Toast.makeText(requireContext(), "sukses update password", Toast.LENGTH_SHORT).show()
+            }
+        })
 //
         viewModel.updateDataLD.observe(viewLifecycleOwner, Observer{
             if(it == true) {
@@ -128,11 +91,50 @@ class ProfileFragment : Fragment() {
 //                Toast.makeText(requireContext(), "gagal update data pengguna", Toast.LENGTH_SHORT).show()
 //            }
         })
+    }
+    override fun onRegisterClick(v: View) {
+        viewModel.updateUser(binding.user!!)
+    }
 
+    override fun onUpdateClick(v: View) {
+//        val newPass = binding.txtNewPassword.text.toString()
+        val oldPass = binding.txtOldPassword.text.toString()
+        val confirm = binding.txtConfirm.text.toString()
 
-        fun observeModel(){
+        if (binding.user!!.password == confirm && oldPass == viewModel.oldPass.value)
+        {
+            viewModel.updatePassword(binding.user!!.username, binding.user!!.password)
+            binding.txtNewPassword.setText("")
+            binding.txtOldPassword.setText("")
+            binding.txtConfirm.setText("")
+//            Toast.makeText(requireContext(), "sukses update password", Toast.LENGTH_SHORT).show()
+//                    viewModel.fetch(username)
 
         }
+        else if (confirm == "" || binding.user!!.password == "" ||oldPass == "")
+        {
+            Toast.makeText(requireContext(), "Isi semua field password", Toast.LENGTH_SHORT)
+                .show()
+        }
+        else
+        {
+            Toast.makeText(requireContext(), "Passwords do not match" + viewModel.oldPass.value, Toast.LENGTH_SHORT)
+                .show()
+        }
+    }
+
+    override fun onBackClick(v: View) {
+        var loginInfo = "com.zuzudev.yarntopia"
+        var shared: SharedPreferences =
+            requireContext().getSharedPreferences(loginInfo, Context.MODE_PRIVATE)
+        var editor: SharedPreferences.Editor = shared.edit()
+        editor.clear()
+        editor.apply()
+
+//            WelcomeActivity.first = false
+//            val intent = Intent(it.context, WelcomeActivity::class.java)
+//            it.context.startActivity(intent)
+        requireActivity().finish()
     }
 
 

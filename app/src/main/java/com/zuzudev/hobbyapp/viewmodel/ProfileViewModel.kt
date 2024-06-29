@@ -24,6 +24,7 @@ import kotlin.coroutines.CoroutineContext
 class ProfileViewModel(application: Application): AndroidViewModel(application), CoroutineScope {
 //    val listPage = MutableLiveData<ArrayList<Page>>()
     val userLD = MutableLiveData<Users>()
+    val oldPass = MutableLiveData<String>()
     val updatePassLD = MutableLiveData<Boolean>()
     val updateDataLD = MutableLiveData<Boolean>()
     private var job = Job()
@@ -47,11 +48,18 @@ class ProfileViewModel(application: Application): AndroidViewModel(application),
         launch {
             val db = buildDb(getApplication())
             db.hobbyDao().updateUser(user)
+            updateDataLD.postValue(true)
+            Log.d("profileUpdateStat", updateDataLD.value.toString())
         }
     }
 
-    fun updatePassword(username:String, nerPass:String ){
-
+    fun updatePassword(username:String, newPass:String ){
+        launch {
+            val db = buildDb(getApplication())
+            db.hobbyDao().updatePassword(username, newPass)
+            updatePassLD.postValue(true)
+            Log.d("profileUpdatePass", updateDataLD.value.toString())
+        }
     }
 
 }

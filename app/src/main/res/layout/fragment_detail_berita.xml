@@ -15,6 +15,7 @@
             name="listener"
             type="com.zuzudev.hobbyapp.view.RegisterClickListener" />
 
+
     </data>
 
     <FrameLayout
