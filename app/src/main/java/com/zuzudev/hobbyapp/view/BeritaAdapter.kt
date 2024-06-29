@@ -1,5 +1,7 @@
 package com.zuzudev.hobbyapp.view
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -26,6 +28,14 @@ class BeritaAdapter(val beritaList:ArrayList<Berita>): RecyclerView.Adapter<Beri
     override fun onBindViewHolder(holder: BeritaViewHolder, position: Int) {
         holder.binding.berita = beritaList[position]
         holder.binding.listener = this
+        var loginInfo = "com.zuzudev.yarntopia"
+        var shared: SharedPreferences = holder.itemView.getContext().getSharedPreferences(
+            loginInfo,
+            Context.MODE_PRIVATE
+        )
+        var editor: SharedPreferences.Editor = shared.edit()
+        editor.putString("gambar", holder.binding.berita!!.gambar)
+        editor.apply()
 
 //        holder.binding.txtJudul.text = beritaList[position].judulBerita
 //        holder.binding.txtPembuat.text = "by " + beritaList[position].idPembuat
@@ -70,10 +80,13 @@ class BeritaAdapter(val beritaList:ArrayList<Berita>): RecyclerView.Adapter<Beri
     }
 
     override fun onReadClick(v: View) {
+
+
         val idberita = v.tag.toString().toInt()
 //        Toast.makeText(v.context,idberita.toString(), Toast.LENGTH_SHORT).show()
         val action = HomeFragmentDirections.actionDetailBerita(idberita)
         Navigation.findNavController(v).navigate(action)
+
     }
 
 }

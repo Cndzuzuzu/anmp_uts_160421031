@@ -39,6 +39,7 @@ class BeritaListViewModel(application: Application): AndroidViewModel(applicatio
             val db = buildDb(getApplication())
             beritaLD.postValue(db.hobbyDao().selectAllBerita())
             loadingLD.postValue(false)
+            Log.d("beritaList", beritaLD.value.toString())
         }
     }
     override fun onCleared() {

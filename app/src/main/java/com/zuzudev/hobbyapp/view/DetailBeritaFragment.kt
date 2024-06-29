@@ -42,7 +42,8 @@ class DetailBeritaFragment : Fragment(), RegisterClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this).get(DetailViewModel::class.java)
-
+        binding.berita = Berita("","","","","")
+        binding.kontenpage = Page(id, "")
         var id = DetailBeritaFragmentArgs.fromBundle(requireArguments()).idBerita
         viewModel.fetch(id)
         viewModel.detailBerita(id)
@@ -51,32 +52,48 @@ class DetailBeritaFragment : Fragment(), RegisterClickListener {
         var shared: SharedPreferences = requireContext().getSharedPreferences(loginInfo,
             Context.MODE_PRIVATE )
         var username = shared.getString("username","").toString()
+        var gambar =shared.getString("gambar","").toString()
+        binding.berita!!.gambar = gambar
 
-        binding.berita = Berita("","","","","")
-        binding.kontenpage = Page(id, "")
+
+
+        var ifForPage = 0
+        viewModel.fetchPage(ifForPage)
 
 
         binding.listener = this
 //        viewModel.fetchPage(binding.kontenpage!!.idPage)
 
-        viewModel.beritaLD.observe(viewLifecycleOwner, Observer {
-            binding.berita = it
-//            binding.kontenpage!!.idBerita = it.idBerita
 
-            if(binding.berita!!.idPembuat == username){
-                binding.btnAddPage.visibility = View.VISIBLE
-//                binding.txtAddPage.visibility = View.VISIBLE
+        binding.refreshLayout.setOnRefreshListener {
+            viewModel.fetch(id)
+            viewModel.detailBerita(id)
+            viewModel.fetchPage(ifForPage)
+            binding.refreshLayout.isRefreshing = false
+        }
+
+        viewModel.beritaLD.observe(viewLifecycleOwner, Observer {
+            if(it != null){
+                binding.berita = it
+
+                if(binding.berita!!.idPembuat == username){
+                    binding.btnAddPage.visibility = View.VISIBLE
+                }
+                else{
+                    binding.btnAddPage.visibility = View.INVISIBLE
+                }
             }
-            else{
-                binding.btnAddPage.visibility = View.INVISIBLE
-//                binding.txtAddPage.visibility = View.INVISIBLE
-            }
+
         })
         viewModel.pageLD.observe(viewLifecycleOwner, Observer {
-            binding.kontenpage = it
-            viewModel.fetchPage(binding.kontenpage!!.idPage)
+            if(it != null) {
+                binding.kontenpage = it
+            }
+//            viewModel.fetchPage(binding.kontenpage!!.idPage)
         })
-
+//        viewModel.addPageLD.observe(viewLifecycleOwner, Observer {
+//            binding.addpage = it
+//        })
 //        histViewModel.addHistLD.observe(viewLifecycleOwner, Observer {
 //            if (it==true){
 //                Toast.makeText(requireContext(), "Add to History", Toast.LENGTH_SHORT).show()
@@ -88,7 +105,8 @@ class DetailBeritaFragment : Fragment(), RegisterClickListener {
         var currentPageIdx = 0
         fun updateTextView(listPage:List<Page>) {
             binding.kontenpage!!.kontenBerita = listPage[currentPageIdx].kontenBerita
-            binding.txtPage.text = listPage[currentPageIdx].idPage.toString() + "/" + listPage.size.toString()
+//            binding.txtPage.text = listPage[currentPageIdx].idPage.toString() + "/" + listPage.size.toString()
+            binding.txtPage.text = (currentPageIdx+1).toString() + "/" + listPage.size.toString()
         }
         fun updateButtonVisibility(listPage:List<Page>) {
             binding.btnPrev.isEnabled = currentPageIdx > 0
@@ -97,8 +115,10 @@ class DetailBeritaFragment : Fragment(), RegisterClickListener {
 
         viewModel.listPage.observe(viewLifecycleOwner, Observer{
             var page = it
+
 //            binding.kontenpage!!.idPage = page[currentPageIdx+1].idPage
             if(page.size >0) {
+                ifForPage = page[currentPageIdx].idPage
                 updateTextView(page)
                 updateButtonVisibility(page)
 
@@ -118,6 +138,7 @@ class DetailBeritaFragment : Fragment(), RegisterClickListener {
                     updateButtonVisibility(page)
                     viewModel.fetch(id)
                     viewModel.detailBerita(id)
+                    viewModel.fetchPage(page[currentPageIdx].idPage)
 //                    viewModel.fetchPage(currentPageIdx)
                 }
             }

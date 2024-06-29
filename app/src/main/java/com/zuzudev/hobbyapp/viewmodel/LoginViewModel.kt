@@ -33,6 +33,7 @@ class LoginViewModel(application: Application): AndroidViewModel(application), C
     fun login(username: String, password:String) {
         passErrorLD.value = false
         loginStatLD.value = false
+
         launch {
             val db = buildDb(getApplication())
             userLD.postValue(db.hobbyDao().login(username, password))
